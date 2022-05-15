@@ -11,13 +11,27 @@ const LOG_EVENT_MONSTER_ATTACK = "MONSTER_ATTACK";
 const LOG_EVENT_PLAYER_HEAL = "PLAYER_HEAL";
 const LOG_EVENT_GAME_OVER = "GAME_OVER";
 
-const enteredValue = prompt("Maximum life for you and the monster.", "100");
-
-let chosenMaxLife = parseInt(enteredValue);
 let battleLog = [];
 let lastLoggedEntry;
-if (isNaN(chosenMaxLife) || chosenMaxLife <= 0) {
+
+function getMaxLifeValue() {
+  const enteredValue = prompt("Maximum life for you and the monster.", "100");
+
+  const parsedValue = parseInt(enteredValue);
+  if (isNaN(parsedValue) || parsedValue <= 0) {
+    throw { message: "Invalid user input, not a number!" };
+  }
+  return parsedValue;
+}
+let chosenMaxLife;
+
+try {
+  chosenMaxLife = getMaxLifeValue();
+} catch (error) {
+  console.log(error);
   chosenMaxLife = 100;
+  alert("You entered something wrong!");
+  //throw error;
 }
 
 let currentMonsterHealth = chosenMaxLife;
@@ -31,48 +45,50 @@ function writeToLog(ev, val, monsterHealth, playerHealth) {
     event: ev,
     value: val,
     finalMonsterHealth: monsterHealth,
-    finalPlayerHealth: playerHealth
+    finalPlayerHealth: playerHealth,
   };
-  switch(ev) {
+  switch (ev) {
     case LOG_EVENT_PLAYER_ATTACK:
-      logEntry.target = 'MONSTER';
+      logEntry.target = "MONSTER";
       break;
-      case LOG_EVENT_PLAYER_STRONG_ATTACK:
-        logEntry = {
-          event: ev,
-          value: val,
-          target: "MONSTER",
-          finalMonsterHealth: monsterHealth,
-          finalPlayerHealth: playerHealth
-        };
-        break;
-        case LOG_EVENT_MONSTER_ATTACK:
-          logEntry = {
-            event: ev,
-            value: val,
-            target: "PLAYER",
-            finalMonsterHealth: monsterHealth,
-            finalPlayerHealth: playerHealth
-          };
-          break;
-          case LOG_EVENT_PLAYER_HEAL:
-            logEntry = {
-              event: ev,
-              value: val,
-              target: "PLAYER",
-              finalMonsterHealth: monsterHealth,
-              finalPlayerHealth: playerHealth
-            };break;
-            case LOG_EVENT_GAME_OVER:
-              logEntry = {
-                event: ev,
-                value: val,
-                target: "MONSTER",
-                finalMonsterHealth: monsterHealth,
-                finalPlayerHealth: playerHealth
-              };break;
-           default: logEntry = {};   
-
+    case LOG_EVENT_PLAYER_STRONG_ATTACK:
+      logEntry = {
+        event: ev,
+        value: val,
+        target: "MONSTER",
+        finalMonsterHealth: monsterHealth,
+        finalPlayerHealth: playerHealth,
+      };
+      break;
+    case LOG_EVENT_MONSTER_ATTACK:
+      logEntry = {
+        event: ev,
+        value: val,
+        target: "PLAYER",
+        finalMonsterHealth: monsterHealth,
+        finalPlayerHealth: playerHealth,
+      };
+      break;
+    case LOG_EVENT_PLAYER_HEAL:
+      logEntry = {
+        event: ev,
+        value: val,
+        target: "PLAYER",
+        finalMonsterHealth: monsterHealth,
+        finalPlayerHealth: playerHealth,
+      };
+      break;
+    case LOG_EVENT_GAME_OVER:
+      logEntry = {
+        event: ev,
+        value: val,
+        target: "MONSTER",
+        finalMonsterHealth: monsterHealth,
+        finalPlayerHealth: playerHealth,
+      };
+      break;
+    default:
+      logEntry = {};
   }
   // if (ev === LOG_EVENT_PLAYER_ATTACK) {
   //   logEntry = {
@@ -220,29 +236,26 @@ function healPlayerHandler() {
 }
 
 function printLogHandler() {
-//   for (let i = 0; i < battleLog.length; i++){
-// console.log(battleLog[i]);
-//   }
-let j = 0;
-while (j<3){
-  console.log("------------");
-  j++;
-}
-let i = 0;
-  for(const logEntry of battleLog) {
-    if(!lastLoggedEntry && lastLoggedEntry !== 0 || lastLoggedEntry < i)
-    {
+  //   for (let i = 0; i < battleLog.length; i++){
+  // console.log(battleLog[i]);
+  //   }
+  let j = 0;
+  while (j < 3) {
+    console.log("------------");
+    j++;
+  }
+  let i = 0;
+  for (const logEntry of battleLog) {
+    if ((!lastLoggedEntry && lastLoggedEntry !== 0) || lastLoggedEntry < i) {
       console.log(`#${i}`);
-      for (const key in logEntry){
+      for (const key in logEntry) {
         console.log(`${key} => ${logEntry[key]}`);
-  
       }
       lastLoggedEntry = i;
       break;
     }
-    
+
     i++;
-    
   }
 }
 
